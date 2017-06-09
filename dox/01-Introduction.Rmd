@@ -5,6 +5,172 @@ source("layout/utils.R")
 Tutorial {#Tutorial}
 ========
 
+TMB is a tool for doing parameter estimation in latent variable models. Its basic functionality is the ability to calculate derivatives of (likelihood) functions. A TMB project contains two parts:
+
+* **C++ file** which defines the objective function (usually the negative log likelihood)
+* **R file** which sets up data, calls the C++ function, and minimizes the objective function.
+  We assume familiarity with R but not so much with C++.
+
+This tutorial explains how this works for a simple model where we have data $X_1,...,X_n \sim iid\:N(\mu,\sigma^2)$.
+
+### Writing the C++ function
+
+The C++ code that evaluates the (negative) log likelihood in this model is:
+
+```{.cpp}
+#include <TMB.hpp>                                // Links in the TMB libraries
+
+template<class Type>
+Type objective_function<Type>::operator() ()
+{
+  DATA_VECTOR(x);                                 // Data vector transmitted from R
+  PARAMETER(mu);                                  // Parameter value transmitted from R
+  PARAMETER(sigma);                               // Parameter value transmitted from R
+
+  Type f;                                         // Declare the "objective function" (neg. log. likelihood)
+  f = -sum(dnorm(x,mu,sigma,true));               // Use R-style call to normal density
+
+  return f;
+}
+```
+
+Recall that `//` marks the beginning of a comment in C++ (that extends to the end of line).
+
+The variables of the model (_parameters_ and _data_ in statistical terminology)
+
+```{.cpp}
+  DATA_VECTOR(x);                                 // Our observations read from R
+  PARAMETER(mu);                                  // Derivatives can ONLY be calculated for parameters
+  PARAMETER(sigma);
+```
+  
+will be read from R when the function is called.
+
+The return value is held by the variable `f` which must be declared explicitly:
+
+```{.cpp}
+  Type f;                                         // Declare the "objective function" (neg. log. likelihood)
+```
+
+You can name this variable whatever you like, e.g. `nll`. The `Type` keyword is the special
+TMB type that is used for all variables (except that `int` is allowed in some contexts).
+The macro DATA_VECTOR(x) amounts to `vector<Type> x`, while PARAMETER(mu) amounts to `Type mu`, 
+and hence also adhere to this rule.
+The ordinary C++ types `float` and `double` are not used in TMB.
+
+Finally, we evaluate the negative log likelihood:
+
+```{.cpp}
+  f = -sum(dnorm(x,mu,sigma,true));
+```
+
+The code used to calculate the normal density should be clear to R users. TMB attempts to
+provide R style probability distributions:
+
+* Vector arguments are allowed, but vectors must all be of the same length.
+* The argument `true` above corresponds to `log = TRUE` in R.
+
+### Calling the function from R
+
+Now that we have written the C++ function we can call it from R. 
+
+We start an R session and generate data
+
+```{.R eval=FALSE}
+ n <- 100
+ x <- rnorm(n=n,mean=0,sd=1)          # Generate data
+```
+
+We next compile and link the C++ function (which we have put in the file "tutorial.cpp")
+
+```{.R eval=FALSE}
+ library(TMB)
+ compile("tutorial.cpp")             # Compile the C++ file
+ dyn.load(dynlib("tutorial"))        # Dynamically link the C++ code
+```
+
+We then construct an R object (f) that represents our C++ function.
+
+```{.R eval=FALSE}
+ f <- MakeADFun(data=list(x=x),parameters=list(mu=0,sigma=1))
+```
+
+This assigns values to the data vector (`x`) and default values to the parameters (`mu` and `sigma`).
+The variable names (`x`, `mu` and `sigma`) must correspond to those used in the C++ program,
+or otherwise TMB will complain.
+
+We can now call the C++ function and compare to the value obtained internally in R:
+
+```{.R eval=FALSE}
+ f$fn(list(mu=1,sigma=1))          # Call TMB function value
+[1] 188.0919
+ -sum(dnorm(x,mean=1,sd=1,log=T))  # Verify that we get the same in R
+[1] 188.0919
+```
+
+Next we can calculate derivatives:
+
+```{.R eval=FALSE}
+ f$gr(list(mu=1,sigma=1))          # First order derivatives (w.r.t mu and sigma)
+         [,1]      [,2]
+[1,] 95.47669 -92.39614
+
+ f$he(list(mu=1,sigma=1))          # Second order derivatives, i.e. the Hessian matrix
+          [,1]      [,2]
+[1,]  100.0000 -190.9534
+[2,] -190.9534  477.1884
+```
+
+Finally we can maximize the likelihood function with respect to (wrt) the parameters (shortened output):
+
+```{.R eval=FALSE}
+ fit = nlminb(f$par,f$fn,f$gr,lower=c(-10,0.0),upper=c(10.0,10.0))
+ print(fit)
+$par
+        mu      sigma 
+0.04523311 1.00617174 
+```
+
+Remember that this yields the maximum likelihood estimate of sigma (the one that divides
+by n rather than n-1). The corresponding estimate evaluated in R is
+
+```{.R eval=FALSE}
+ sd(x)/sqrt(n/(n-1))
+[1] 1.006172
+```
+
+### Integrated likelihood
+We shall now do something that may be surprising to you. One of the fundamental
+features of TMB is that it can apply the Laplace approximation to any of the model
+parameters, which amounts to integrating the likelihood with respect to this parameter.
+Why would we like to do this? In random effects models this is exactly how
+you deal with random parameters. 
+
+In our model there are no random parameters, but we can still formally 
+integrate the likelihood. In R notation we shall integrate
+`prod(dnorm(x=x,mean=mu,sd=sigma,log=FALSE))` wrt mu. To instruct TMB to do
+this we define a new object:
+```R
+f_integrated = MakeADFun(data=list(x=x),parameters=list(mu=0,sigma=1),random="mu")
+```
+The difference is the `random="mu"` argument which tells TMB to integrate wrt mu.
+sigma is now the only parameter left (because mu has been integrated out):
+```R
+ fit2 = nlminb(f_integrated$par,f_integrated$fn,f_integrated$gr,lower=c(0.00001),upper=c(10.0))
+ print(fit2)
+$par
+   sigma 
+1.011241 
+```
+which happens to be the ordinary empirical standard deviation:
+```R
+ sd(x)
+[1] 1.011241
+```
+Conclusion: the integration of the likelihood brings in the factor `n/(n-1)`. Cool???
+(It is called the REML estimator).
+
+
 A TMB project consists of an R file (*.R) and a C++ file (*.cpp).  The
 R file does pre- and post processing of data in addition to maximizing
 the log-likelihood contained in *.cpp. See [Examples](#Examples) for more
