@@ -1,4 +1,5 @@
 require(TMB)
+compile("simple.cpp")
 dyn.load(dynlib("simple"))
 
 ## Test data
