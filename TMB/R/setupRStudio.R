@@ -79,9 +79,12 @@ if(ans == "yes") {
     if(any(chk))
       message("Skipping because changes seem to have been made already.")
     else {
-      #cat(snips, file=outfile, append=TRUE)
+      dir.create(dirname(snipRfile), showWarnings=FALSE, recursive=TRUE)
+      if(!file.exists(snipRfile))file.create(snipRfile)
       write.table(rsnips,file=snipRfile,quote=FALSE,
                   row.names=FALSE,col.names=FALSE,append=TRUE)
+      dir.create(dirname(snipCppfile), showWarnings=FALSE, recursive=TRUE)
+      if(!file.exists(snipCppfile))file.create(snipCppfile)
       write.table(cppsnips,file=snipCppfile,quote=FALSE,
                   row.names=FALSE,col.names=FALSE,append=TRUE)
       message("Please re-start RStudio for the changes to take place.")
