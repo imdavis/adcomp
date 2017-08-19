@@ -162,19 +162,19 @@ void RObjectTestExpectedType(SEXP x, RObjectTester expectedtype, const char *nam
   if(expectedtype != NULL){
     if(!expectedtype(x)){
       if(isNull(x)){
-	warning("Expected object. Got NULL.");
+	Rf_warning("Expected object. Got NULL.");
       }
       Rf_error("Error when reading the variable: '%s'. Please check data and parameters.",nam);
     }
   }
 }
 Rboolean isValidSparseMatrix(SEXP x){
-  if(!inherits(x,"dgTMatrix"))warning("Expected sparse matrix of class 'dgTMatrix'.");
+  if(!inherits(x,"dgTMatrix"))Rf_warning("Expected sparse matrix of class 'dgTMatrix'.");
   return inherits(x,"dgTMatrix");
 }
 Rboolean isNumericScalar(SEXP x){
   if(LENGTH(x)!=1){
-    warning("Expected scalar. Got length=%i",LENGTH(x));
+    Rf_warning("Expected scalar. Got length=%i",LENGTH(x));
     return FALSE;
   }
   return isNumeric(x);
