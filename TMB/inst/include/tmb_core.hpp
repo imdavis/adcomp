@@ -87,8 +87,8 @@ SEXP ptrList(SEXP x);
 SEXP ptrList(SEXP x)
 {
   SEXP ans,names;
-  PROTECT(ans=allocVector(VECSXP,1));
-  PROTECT(names=allocVector(STRSXP,1));
+  PROTECT(ans=Rf_allocVector(VECSXP,1));
+  PROTECT(names=Rf_allocVector(STRSXP,1));
   SET_VECTOR_ELT(ans,0,x);
   SET_STRING_ELT(names,0,mkChar("ptr"));
   setAttrib(ans,R_NamesSymbol,names);
@@ -528,7 +528,7 @@ struct report_stack{
   {
     int n=result.size();
     SEXP nam;
-    PROTECT(nam=allocVector(STRSXP,n));
+    PROTECT(nam=Rf_allocVector(STRSXP,n));
     int k=0;
     for(int i=0;i<names.size();i++){
       for(int j=0;j<namelength[i];j++){
@@ -670,8 +670,8 @@ public:
     int n=theta.size();
     SEXP res;
     SEXP nam;
-    PROTECT(res=allocVector(REALSXP,n));
-    PROTECT(nam=allocVector(STRSXP,n));
+    PROTECT(res=Rf_allocVector(REALSXP,n));
+    PROTECT(nam=Rf_allocVector(STRSXP,n));
     for(int i=0;i<n;i++){
       //REAL(res)[i]=CppAD::Value(theta[i]);
       REAL(res)[i]=value(theta[i]);
@@ -687,7 +687,7 @@ public:
   {
     int n=parnames.size();
     SEXP nam;
-    PROTECT(nam=allocVector(STRSXP,n));
+    PROTECT(nam=Rf_allocVector(STRSXP,n));
     for(int i=0;i<n;i++){
       SET_STRING_ELT(nam,i,mkChar(parnames[i]));
     }
@@ -1135,8 +1135,8 @@ extern "C"
     ADFun<double>* pf;
     pf=(ADFun<double>*)R_ExternalPtrAddr(f);
     SEXP ans,names;
-    PROTECT(ans=allocVector(VECSXP,4));
-    PROTECT(names=allocVector(STRSXP,4));
+    PROTECT(ans=Rf_allocVector(VECSXP,4));
+    PROTECT(names=Rf_allocVector(STRSXP,4));
     SET_VECTOR_ELT(ans,0,asSEXP(int(pf->Domain())));
     SET_STRING_ELT(names,0,mkChar("Domain"));
     SET_VECTOR_ELT(ans,1,asSEXP(int(pf->Range())));
@@ -1552,7 +1552,7 @@ extern "C"
 {
   SEXP usingAtomics(){
     SEXP ans;
-    PROTECT(ans = allocVector(INTSXP,1));
+    PROTECT(ans = Rf_allocVector(INTSXP,1));
     INTEGER(ans)[0] = atomic::atomicFunctionGenerated;
     UNPROTECT(1);
     return ans;

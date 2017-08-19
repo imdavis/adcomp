@@ -41,7 +41,7 @@ SEXP asSEXP(const vector<Type> &a) CSKIP(       \
 {                                               \
   R_xlen_t size = a.size();                     \
   SEXP val;                                     \
-  PROTECT(val = allocVector(REALSXP,size));     \
+  PROTECT(val = Rf_allocVector(REALSXP,size));     \
   double *p = REAL(val);                        \
   for (R_xlen_t i = 0; i < size; i++)           \
     p[i] = asDouble(a[i]);                      \
@@ -59,7 +59,7 @@ SEXP asSEXP(const vector<Type> &a)
 {
    R_xlen_t size = a.size();
    SEXP val;
-   PROTECT(val = allocVector(VECSXP, size));
+   PROTECT(val = Rf_allocVector(VECSXP, size));
    for (R_xlen_t i = 0; i < size; i++)
      SET_VECTOR_ELT(val, i, asSEXP(a[i]));
    UNPROTECT(1);
@@ -69,7 +69,7 @@ SEXP asSEXP(const vector<Type> &a)
 SEXP asSEXP(const double &a) CSKIP(
 {
    SEXP val;
-   PROTECT(val=allocVector(REALSXP,1));
+   PROTECT(val=Rf_allocVector(REALSXP,1));
    REAL(val)[0]=a;
    UNPROTECT(1);
    return val;
@@ -77,7 +77,7 @@ SEXP asSEXP(const double &a) CSKIP(
 SEXP asSEXP(const int &a) CSKIP(
 {
    SEXP val;
-   PROTECT(val=allocVector(INTSXP,1));
+   PROTECT(val=Rf_allocVector(INTSXP,1));
    INTEGER(val)[0]=a;
    UNPROTECT(1);
    return val;
@@ -128,12 +128,12 @@ template<class Type>
 SEXP asSEXP(const tmbutils::array<Type> &a)
 {
    SEXP val;
-   PROTECT(val = allocVector(REALSXP, a.size()));
+   PROTECT(val = Rf_allocVector(REALSXP, a.size()));
    double *p = REAL(val);
    for(R_xlen_t i=0; i<a.size(); i++)
      p[i] = asDouble(a[i]);
    SEXP dim;
-   PROTECT(dim = allocVector(INTSXP, a.dim.size()));
+   PROTECT(dim = Rf_allocVector(INTSXP, a.dim.size()));
    for(int i=0; i<a.dim.size(); i++)
      INTEGER(dim)[i] = a.dim[i];
    setAttrib(val, R_DimSymbol, dim);
@@ -148,12 +148,12 @@ SEXP asSEXP(Eigen::SparseMatrix<Type> x){
   // Allocate return object
   R_xlen_t nnz = x.nonZeros();
   SEXP ans = PROTECT(R_do_new_object(R_do_MAKE_CLASS("dgTMatrix")));
-  SEXP dim = PROTECT(allocVector(INTSXP, 2));
-  SEXP dimnames = PROTECT(allocVector(VECSXP, 2));
-  SEXP values = PROTECT(allocVector(REALSXP, nnz));
-  SEXP i = PROTECT(allocVector(INTSXP, nnz));
-  SEXP j = PROTECT(allocVector(INTSXP, nnz));
-  SEXP factors = PROTECT(allocVector(VECSXP, 0));
+  SEXP dim = PROTECT(Rf_allocVector(INTSXP, 2));
+  SEXP dimnames = PROTECT(Rf_allocVector(VECSXP, 2));
+  SEXP values = PROTECT(Rf_allocVector(REALSXP, nnz));
+  SEXP i = PROTECT(Rf_allocVector(INTSXP, nnz));
+  SEXP j = PROTECT(Rf_allocVector(INTSXP, nnz));
+  SEXP factors = PROTECT(Rf_allocVector(VECSXP, 0));
   R_do_slot_assign(ans, install("i"), i);
   R_do_slot_assign(ans, install("j"), j);
   R_do_slot_assign(ans, install("Dim"), dim);
