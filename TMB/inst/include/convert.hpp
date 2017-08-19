@@ -26,7 +26,7 @@ SEXP asSEXP(const matrix<Type> &a)
    R_xlen_t nr = a.rows();
    R_xlen_t nc = a.cols();
    SEXP val;
-   PROTECT(val = allocMatrix(REALSXP, nr, nc));
+   PROTECT(val = Rf_allocMatrix(REALSXP, nr, nc));
    double *p = REAL(val);
    for(R_xlen_t i=0; i<nr; i++)
      for(R_xlen_t j=0; j<nc; j++)
