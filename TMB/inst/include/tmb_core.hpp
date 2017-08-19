@@ -261,7 +261,7 @@ getListElement(objective_function::data,#name,&isNumeric)));
 
 /** \brief Get the number of levels of a data factor from R
     \ingroup macros */
-#define NLEVELS(name) LENGTH(getAttrib(			\
+#define NLEVELS(name) LENGTH(Rf_getAttrib(			\
 getListElement(this->data,#name),install("levels")))
 
 /** \brief Get sparse matrix from R and declare it as
@@ -465,7 +465,7 @@ SEXP getListElement(SEXP list, const char *str, RObjectTester expectedtype=NULL)
 SEXP getListElement(SEXP list, const char *str, RObjectTester expectedtype=NULL)
 {
   if(config.debug.getListElement)std::cout << "getListElement: " << str << " ";
-  SEXP elmt = R_NilValue, names = getAttrib(list, R_NamesSymbol); 
+  SEXP elmt = R_NilValue, names = Rf_getAttrib(list, R_NamesSymbol);
   int i; 
   for (i = 0; i < length(list); i++) 
     if(strcmp(CHAR(STRING_ELT(names, i)), str) == 0) 
@@ -759,8 +759,8 @@ public:
   {
     pushParname(nam);
     SEXP elm=getListElement(parameters,nam);
-    int* map=INTEGER(getAttrib(elm,install("map")));
-    int  nlevels=INTEGER(getAttrib(elm,install("nlevels")))[0];
+    int* map=INTEGER(Rf_getAttrib(elm,install("map")));
+    int  nlevels=INTEGER(Rf_getAttrib(elm,install("nlevels")))[0];
     for(int i=0;i<x.size();i++){
       if(map[i]>=0){
 	thetanames[index+map[i]]=nam;
@@ -772,7 +772,7 @@ public:
   // Auto detect whether we are in "map-mode"
   SEXP getShape(const char *nam, RObjectTester expectedtype=NULL){
     SEXP elm=getListElement(parameters,nam);
-    SEXP shape=getAttrib(elm,install("shape"));
+    SEXP shape=Rf_getAttrib(elm,install("shape"));
     SEXP ans;
     if(shape==R_NilValue)ans=elm; else ans=shape;
     RObjectTestExpectedType(ans, expectedtype, nam);
@@ -782,7 +782,7 @@ public:
   //ArrayType fillShape(ArrayType &x, const char *nam){
   ArrayType fillShape(ArrayType x, const char *nam){
     SEXP elm=getListElement(parameters,nam);
-    SEXP shape=getAttrib(elm,install("shape"));
+    SEXP shape=Rf_getAttrib(elm,install("shape"));
     if(shape==R_NilValue)fill(x,nam);
     else fillmap(x,nam);
     return x;
@@ -960,7 +960,7 @@ SEXP EvalADFunObjectTemplate(SEXP f, SEXP theta, SEXP control)
     if(dumpstack)CppAD::traceforward0sweep(1);
     PROTECT(res=asSEXP(pf->Forward(0,x)));
     if(dumpstack)CppAD::traceforward0sweep(0);
-    SEXP rangenames=getAttrib(f,install("range.names"));
+    SEXP rangenames=Rf_getAttrib(f,install("range.names"));
     if(LENGTH(res)==LENGTH(rangenames)){
       setAttrib(res,R_NamesSymbol,rangenames);
     }
