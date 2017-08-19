@@ -149,7 +149,7 @@ void optimizeTape(ADFunPointer pf){
 
 /* Helpers, to check that data and parameters are of the right types.
    "RObjectTester" denotes the type of a pointer to a test function.
-   Examples of test functions are "isMatrix", "isArray", "isNumeric",
+   Examples of test functions are "isMatrix", "Rf_isArray", "isNumeric",
    etc (see Rinternals.h).
 */
 typedef Rboolean (*RObjectTester)(SEXP);
@@ -317,10 +317,10 @@ if(isDouble<Type>::value && objective_function::do_simulate)
 tmbutils::array<Type> name;						\
 if (!isNull(getListElement(objective_function::parameters,#name))) {	\
   name = objective_function::fillShape(tmbutils::asArray<Type>(		\
-         objective_function::getShape(#name,&isArray)),#name);		\
+         objective_function::getShape(#name,&Rf_isArray)),#name);		\
 } else {								\
   name = tmbutils::asArray<Type>(getListElement(			\
-         objective_function::data,#name,&isArray));			\
+         objective_function::data,#name,&Rf_isArray));			\
 }
 
 /** \brief Get parameter array from R and declare it as array<Type>
@@ -328,7 +328,7 @@ if (!isNull(getListElement(objective_function::parameters,#name))) {	\
 #define PARAMETER_ARRAY(name)					\
 tmbutils::array<Type> name(objective_function::fillShape(	\
 tmbutils::asArray<Type>(objective_function::getShape(		\
-#name,&isArray)),#name));
+#name,&Rf_isArray)),#name));
 
 /** \brief Get data matrix from R and declare it as matrix<int>
     \ingroup macros */
@@ -338,7 +338,7 @@ getListElement(objective_function::data,#name,&isMatrix)));
 /** \brief Get data array from R and declare it as array<int>
     \ingroup macros */
 #define DATA_IARRAY(name) tmbutils::array<int> name(tmbutils::asArray<int>( \
-	getListElement(objective_function::data,#name,&isArray)));
+	getListElement(objective_function::data,#name,&Rf_isArray)));
 
 /** \brief Get string from R and declare it as std::string
 
