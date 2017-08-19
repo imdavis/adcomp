@@ -92,7 +92,7 @@ SEXP asSEXP(const AD<Type> &a){
 template <class Type>
 vector<Type> asVector(SEXP x)
 {
-   if(!isReal(x)) error("NOT A VECTOR!");
+   if(!isReal(x)) Rf_error("NOT A VECTOR!");
    R_xlen_t n = XLENGTH(x);
    typedef Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,1> > MapVector;
    MapVector tmp(REAL(x), n);
@@ -114,7 +114,7 @@ template <class Type>
 matrix<Type> asMatrix(SEXP x)
 {
    if (!isMatrix(x))
-     error("x must be a matrix in 'asMatrix(x)'");
+     Rf_error("x must be a matrix in 'asMatrix(x)'");
    R_xlen_t nr = nrows(x); // nrows is int
    R_xlen_t nc = ncols(x); // ncols is int
    matrix<Type> y(nr, nc);

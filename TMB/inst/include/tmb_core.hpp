@@ -19,7 +19,7 @@
 
 #define TMB_TRY try
 #define TMB_CATCH catch(std::bad_alloc& ba)
-#define TMB_ERROR_BAD_ALLOC error("Memory allocation fail in function '%s'\n", \
+#define TMB_ERROR_BAD_ALLOC Rf_error("Memory allocation fail in function '%s'\n", \
 				  __FUNCTION__)
 
 /* Memory manager:
@@ -111,7 +111,7 @@ extern "C"{
 	R_RunExitFinalizers();
       } else break;
     }
-    if(memory_manager.counter>0)error("Failed to clean. Please manually clean up before unloading\n");
+    if(memory_manager.counter>0)Rf_error("Failed to clean. Please manually clean up before unloading\n");
   }
 #endif
 }
@@ -164,7 +164,7 @@ void RObjectTestExpectedType(SEXP x, RObjectTester expectedtype, const char *nam
       if(isNull(x)){
 	warning("Expected object. Got NULL.");
       }
-      error("Error when reading the variable: '%s'. Please check data and parameters.",nam);
+      Rf_error("Error when reading the variable: '%s'. Please check data and parameters.",nam);
     }
   }
 }
@@ -348,7 +348,7 @@ getListElement(objective_function::data,#name,&isMatrix)));
     options << "apple", "orange";
     DATA_STRING(choice);
     if(! (choice == options).any() )
-      error( ("'" + choice + "'" + " not valid").c_str() );
+      Rf_error( ("'" + choice + "'" + " not valid").c_str() );
     \endcode
 
     \ingroup macros
@@ -717,7 +717,7 @@ public:
   {
     int count=0;
     for(int i=0;i<length(obj);i++){
-      if(!isReal(VECTOR_ELT(obj,i)))error("PARAMETER COMPONENT NOT A VECTOR!");
+      if(!isReal(VECTOR_ELT(obj,i)))Rf_error("PARAMETER COMPONENT NOT A VECTOR!");
       count+=length(VECTOR_ELT(obj,i));
     }
     return count;
@@ -904,22 +904,22 @@ struct parallel_accumulator{
 template<class ADFunType>
 SEXP EvalADFunObjectTemplate(SEXP f, SEXP theta, SEXP control)
 {
-  if(!isNewList(control))error("'control' must be a list");
+  if(!isNewList(control))Rf_error("'control' must be a list");
   ADFunType* pf;
   pf=(ADFunType*)R_ExternalPtrAddr(f);
   PROTECT(theta=coerceVector(theta,REALSXP));
   int n=pf->Domain();
   int m=pf->Range();
-  if(LENGTH(theta)!=n)error("Wrong parameter length.");
+  if(LENGTH(theta)!=n)Rf_error("Wrong parameter length.");
   // Do forwardsweep ?
   int doforward=INTEGER(getListElement(control,"doforward"))[0];
   //R-index -> C-index
   int rangecomponent=INTEGER(getListElement(control,"rangecomponent"))[0]-1;
   if(!((0<=rangecomponent)&(rangecomponent<=m-1)))
-    error("Wrong range component.");
+    Rf_error("Wrong range component.");
   int order = INTEGER(getListElement(control,"order"))[0];
   if((order!=0) & (order!=1) & (order!=2) & (order!=3))
-    error("order can be 0, 1, 2 or 3");
+    Rf_error("order can be 0, 1, 2 or 3");
   int sparsitypattern=INTEGER(getListElement(control,"sparsitypattern"))[0];
   int dumpstack=INTEGER(getListElement(control,"dumpstack"))[0];
   SEXP hessiancols; // Hessian columns
@@ -928,7 +928,7 @@ SEXP EvalADFunObjectTemplate(SEXP f, SEXP theta, SEXP control)
   SEXP hessianrows; // Hessian rows
   PROTECT(hessianrows=getListElement(control,"hessianrows"));
   int nrows=length(hessianrows);
-  if((nrows>0)&(nrows!=ncols))error("hessianrows and hessianrows must have same length");
+  if((nrows>0)&(nrows!=ncols))Rf_error("hessianrows and hessianrows must have same length");
   vector<size_t> cols(ncols);
   vector<size_t> cols0(ncols);
   vector<size_t> rows(nrows);
@@ -943,7 +943,7 @@ SEXP EvalADFunObjectTemplate(SEXP f, SEXP theta, SEXP control)
   SEXP res=R_NilValue;
   SEXP rangeweight=getListElement(control,"rangeweight");
   if(rangeweight!=R_NilValue){
-    if(LENGTH(rangeweight)!=m)error("rangeweight must have length equal to range dimension");
+    if(LENGTH(rangeweight)!=m)Rf_error("rangeweight must have length equal to range dimension");
     if(doforward)pf->Forward(0,x);
     res=asSEXP(pf->Reverse(1,asVector<double>(rangeweight)));
     UNPROTECT(3);
@@ -952,7 +952,7 @@ SEXP EvalADFunObjectTemplate(SEXP f, SEXP theta, SEXP control)
   if(order==3){
     vector<double> w(1);
     w[0]=1;
-    if((nrows!=1) | (ncols!=1))error("For 3rd order derivatives a single hessian coordinate must be specified.");
+    if((nrows!=1) | (ncols!=1))Rf_error("For 3rd order derivatives a single hessian coordinate must be specified.");
     pf->ForTwo(x,rows,cols); /* Compute forward directions */
     PROTECT(res=asSEXP(asMatrix(pf->Reverse(3,w),n,3)));
   }
@@ -1058,10 +1058,10 @@ extern "C"
   {
     ADFun<double>* pf = NULL;
     /* Some type checking */
-    if(!isNewList(data))error("'data' must be a list");
-    if(!isNewList(parameters))error("'parameters' must be a list");
-    if(!isEnvironment(report))error("'report' must be an environment");
-    if(!isNewList(control))error("'control' must be a list");
+    if(!isNewList(data))Rf_error("'data' must be a list");
+    if(!isNewList(parameters))Rf_error("'parameters' must be a list");
+    if(!isEnvironment(report))Rf_error("'report' must be an environment");
+    if(!isNewList(control))Rf_error("'control' must be a list");
     int returnReport = INTEGER(getListElement(control,"report"))[0];
 
     /* Get the default parameter vector (tiny overhead) */
@@ -1175,13 +1175,13 @@ extern "C"
   SEXP EvalADFunObject(SEXP f, SEXP theta, SEXP control)
   {
     TMB_TRY {
-      if(isNull(f))error("Expected external pointer - got NULL");
+      if(isNull(f))Rf_error("Expected external pointer - got NULL");
       SEXP tag=R_ExternalPtrTag(f);
       if(!strcmp(CHAR(tag), "ADFun"))
 	return EvalADFunObjectTemplate<ADFun<double> >(f,theta,control);
       if(!strcmp(CHAR(tag), "parallelADFun"))
 	return EvalADFunObjectTemplate<parallelADFun<double> >(f,theta,control);
-      error("NOT A KNOWN FUNCTION POINTER");
+      Rf_error("NOT A KNOWN FUNCTION POINTER");
     }
     TMB_CATCH {
       TMB_ERROR_BAD_ALLOC;
@@ -1205,9 +1205,9 @@ extern "C"
   SEXP MakeDoubleFunObject(SEXP data, SEXP parameters, SEXP report)
   {
     /* Some type checking */
-    if(!isNewList(data))error("'data' must be a list");
-    if(!isNewList(parameters))error("'parameters' must be a list");
-    if(!isEnvironment(report))error("'report' must be an environment");
+    if(!isNewList(data))Rf_error("'data' must be a list");
+    if(!isNewList(parameters))Rf_error("'parameters' must be a list");
+    if(!isEnvironment(report))Rf_error("'report' must be an environment");
     
     /* Create DoubleFun pointer */
     objective_function<double>* pF = NULL;
@@ -1237,7 +1237,7 @@ extern "C"
       pf = (objective_function<double>*) R_ExternalPtrAddr(f);
       PROTECT( theta=coerceVector(theta,REALSXP) );
       int n = pf->theta.size();
-      if (LENGTH(theta)!=n) error("Wrong parameter length.");
+      if (LENGTH(theta)!=n) Rf_error("Wrong parameter length.");
       vector<double> x(n);
       for(int i=0;i<n;i++) x[i] = REAL(theta)[i];
       pf->theta=x;
@@ -1269,9 +1269,9 @@ extern "C"
   {
     TMB_TRY {
       /* Some type checking */
-      if(!isNewList(data))error("'data' must be a list");
-      if(!isNewList(parameters))error("'parameters' must be a list");
-      if(!isEnvironment(report))error("'report' must be an environment");
+      if(!isNewList(data))Rf_error("'data' must be a list");
+      if(!isNewList(parameters))Rf_error("'parameters' must be a list");
+      if(!isEnvironment(report))Rf_error("'report' must be an environment");
       objective_function<double> F(data,parameters,report);
       F(); // Run through user template
       return F.parNames();
@@ -1312,9 +1312,9 @@ extern "C"
   {
     ADFun<double>* pf = NULL;
     /* Some type checking */
-    if(!isNewList(data))error("'data' must be a list");
-    if(!isNewList(parameters))error("'parameters' must be a list");
-    if(!isEnvironment(report))error("'report' must be an environment");
+    if(!isNewList(data))Rf_error("'data' must be a list");
+    if(!isNewList(parameters))Rf_error("'parameters' must be a list");
+    if(!isEnvironment(report))Rf_error("'report' must be an environment");
 
     /* Get the default parameter vector (tiny overhead) */
     SEXP par,res=NULL;
@@ -1386,9 +1386,9 @@ extern "C"
 sphess MakeADHessObject2_(SEXP data, SEXP parameters, SEXP report, SEXP skip, int parallel_region=-1)
 {
   /* Some type checking */
-  if(!isNewList(data))error("'data' must be a list");
-  if(!isNewList(parameters))error("'parameters' must be a list");
-  if(!isEnvironment(report))error("'report' must be an environment");
+  if(!isNewList(data))Rf_error("'data' must be a list");
+  if(!isNewList(parameters))Rf_error("'parameters' must be a list");
+  if(!isEnvironment(report))Rf_error("'report' must be an environment");
   
   /* Prepare stuff */
   objective_function< AD<AD<AD<double> > > > F(data,parameters,report);
