@@ -113,7 +113,7 @@ matrix<Type> asMatrix(const vector<Type> &x, int nr, int nc)
 template <class Type>
 matrix<Type> asMatrix(SEXP x)
 {
-   if (!isMatrix(x))
+   if (!Rf_isMatrix(x))
      Rf_error("x must be a matrix in 'asMatrix(x)'");
    R_xlen_t nr = nrows(x); // nrows is int
    R_xlen_t nc = ncols(x); // ncols is int
