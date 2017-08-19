@@ -49,7 +49,7 @@ struct config_struct{
     // cmd=0: set defaults in this struct.
     // cmd=1: copy from this struct to R.
     // cmd=2: copy from R to this struct.
-    SEXP name_symbol = install(name);
+    SEXP name_symbol = Rf_install(name);
     if (cmd==0) var = default_value;
     if (cmd==1) defineVar(name_symbol, asSEXP(var), envir);
     if (cmd==2) var = INTEGER(findVar(name_symbol, envir))[0];

@@ -262,7 +262,7 @@ getListElement(objective_function::data,#name,&isNumeric)));
 /** \brief Get the number of levels of a data factor from R
     \ingroup macros */
 #define NLEVELS(name) LENGTH(Rf_getAttrib(			\
-getListElement(this->data,#name),install("levels")))
+getListElement(this->data,#name),Rf_install("levels")))
 
 /** \brief Get sparse matrix from R and declare it as
     Eigen::SparseMatrix<Type>
@@ -282,7 +282,7 @@ getListElement(objective_function::data,#name,&isValidSparseMatrix)));
     \ingroup macros */
 #define REPORT(name)                                            \
 if(isDouble<Type>::value && this->current_parallel_region<0) {  \
-  defineVar(install(#name),                                     \
+  defineVar(Rf_install(#name),                                     \
             asSEXP_protect(name),objective_function::report);   \
   UNPROTECT(1);                                                 \
 }
@@ -759,8 +759,8 @@ public:
   {
     pushParname(nam);
     SEXP elm=getListElement(parameters,nam);
-    int* map=INTEGER(Rf_getAttrib(elm,install("map")));
-    int  nlevels=INTEGER(Rf_getAttrib(elm,install("nlevels")))[0];
+    int* map=INTEGER(Rf_getAttrib(elm,Rf_install("map")));
+    int  nlevels=INTEGER(Rf_getAttrib(elm,Rf_install("nlevels")))[0];
     for(int i=0;i<x.size();i++){
       if(map[i]>=0){
 	thetanames[index+map[i]]=nam;
@@ -772,7 +772,7 @@ public:
   // Auto detect whether we are in "map-mode"
   SEXP getShape(const char *nam, RObjectTester expectedtype=NULL){
     SEXP elm=getListElement(parameters,nam);
-    SEXP shape=Rf_getAttrib(elm,install("shape"));
+    SEXP shape=Rf_getAttrib(elm,Rf_install("shape"));
     SEXP ans;
     if(shape==R_NilValue)ans=elm; else ans=shape;
     RObjectTestExpectedType(ans, expectedtype, nam);
@@ -782,7 +782,7 @@ public:
   //ArrayType fillShape(ArrayType &x, const char *nam){
   ArrayType fillShape(ArrayType x, const char *nam){
     SEXP elm=getListElement(parameters,nam);
-    SEXP shape=Rf_getAttrib(elm,install("shape"));
+    SEXP shape=Rf_getAttrib(elm,Rf_install("shape"));
     if(shape==R_NilValue)fill(x,nam);
     else fillmap(x,nam);
     return x;
@@ -960,7 +960,7 @@ SEXP EvalADFunObjectTemplate(SEXP f, SEXP theta, SEXP control)
     if(dumpstack)CppAD::traceforward0sweep(1);
     PROTECT(res=asSEXP(pf->Forward(0,x)));
     if(dumpstack)CppAD::traceforward0sweep(0);
-    SEXP rangenames=Rf_getAttrib(f,install("range.names"));
+    SEXP rangenames=Rf_getAttrib(f,Rf_install("range.names"));
     if(LENGTH(res)==LENGTH(rangenames)){
       setAttrib(res,R_NamesSymbol,rangenames);
     }
@@ -1117,13 +1117,13 @@ extern "C"
       }
       /* Convert ADFun pointer to R_ExternalPtr */
       PROTECT(res=R_MakeExternalPtr((void*) pf,mkChar("ADFun"),R_NilValue));
-      setAttrib(res,install("range.names"),info);
+      setAttrib(res,Rf_install("range.names"),info);
       R_RegisterCFinalizer(res,finalizeADFun);
     }
 
     /* Return list of external pointer and default-parameter */
     SEXP ans;
-    setAttrib(res,install("par"),par);
+    setAttrib(res,Rf_install("par"),par);
     PROTECT(ans=ptrList(res));
     UNPROTECT(4);
 
@@ -1369,7 +1369,7 @@ extern "C"
 
     /* Return ptrList */
     SEXP ans;
-    setAttrib(res,install("par"),par);
+    setAttrib(res,Rf_install("par"),par);
     PROTECT(ans=ptrList(res));
     UNPROTECT(3);
     return ans;
@@ -1480,9 +1480,9 @@ SEXP asSEXP(const sphess_t<ADFunType> &H, const char* tag)
     /* Return list */
     SEXP ans;
     /* Implicitly protected temporaries */
-    SEXP par_symbol = install("par");
-    SEXP i_symbol = install("i");
-    SEXP j_symbol = install("j");
+    SEXP par_symbol = Rf_install("par");
+    SEXP i_symbol = Rf_install("i");
+    SEXP j_symbol = Rf_install("j");
     setAttrib(res, par_symbol, par);
     setAttrib(res, i_symbol, asSEXP(H.i));
     setAttrib(res, j_symbol, asSEXP(H.j));

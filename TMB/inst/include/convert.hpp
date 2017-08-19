@@ -154,12 +154,12 @@ SEXP asSEXP(Eigen::SparseMatrix<Type> x){
   SEXP i = PROTECT(Rf_allocVector(INTSXP, nnz));
   SEXP j = PROTECT(Rf_allocVector(INTSXP, nnz));
   SEXP factors = PROTECT(Rf_allocVector(VECSXP, 0));
-  R_do_slot_assign(ans, install("i"), i);
-  R_do_slot_assign(ans, install("j"), j);
-  R_do_slot_assign(ans, install("Dim"), dim);
-  R_do_slot_assign(ans, install("Dimnames"), dimnames);
-  R_do_slot_assign(ans, install("x"), values);
-  R_do_slot_assign(ans, install("factors"), factors);
+  R_do_slot_assign(ans, Rf_install("i"), i);
+  R_do_slot_assign(ans, Rf_install("j"), j);
+  R_do_slot_assign(ans, Rf_install("Dim"), dim);
+  R_do_slot_assign(ans, Rf_install("Dimnames"), dimnames);
+  R_do_slot_assign(ans, Rf_install("x"), values);
+  R_do_slot_assign(ans, Rf_install("factors"), factors);
   // Insert
   INTEGER(dim)[0] = x.rows();
   INTEGER(dim)[1] = x.cols();
