@@ -115,8 +115,8 @@ matrix<Type> asMatrix(SEXP x)
 {
    if (!Rf_isMatrix(x))
      Rf_error("x must be a matrix in 'asMatrix(x)'");
-   R_xlen_t nr = nrows(x); // nrows is int
-   R_xlen_t nc = ncols(x); // ncols is int
+   R_xlen_t nr = Rf_nrows(x); // nrows is int
+   R_xlen_t nc = Rf_ncols(x); // ncols is int
    matrix<Type> y(nr, nc);
    for(R_xlen_t i=0; i<nr; i++)
      for(R_xlen_t j=0; j<nc; j++)
