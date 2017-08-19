@@ -717,7 +717,7 @@ public:
   {
     int count=0;
     for(int i=0;i<length(obj);i++){
-      if(!isReal(VECTOR_ELT(obj,i)))Rf_error("PARAMETER COMPONENT NOT A VECTOR!");
+      if(!Rf_isReal(VECTOR_ELT(obj,i)))Rf_error("PARAMETER COMPONENT NOT A VECTOR!");
       count+=length(VECTOR_ELT(obj,i));
     }
     return count;
