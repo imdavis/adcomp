@@ -91,7 +91,7 @@ SEXP ptrList(SEXP x)
   PROTECT(names=Rf_allocVector(STRSXP,1));
   SET_VECTOR_ELT(ans,0,x);
   SET_STRING_ELT(names,0,mkChar("ptr"));
-  setAttrib(ans,R_NamesSymbol,names);
+  Rf_setAttrib(ans,R_NamesSymbol,names);
   memory_manager.RegisterCFinalizer(ans);
   UNPROTECT(2);
   return ans;
@@ -677,7 +677,7 @@ public:
       REAL(res)[i]=value(theta[i]);
       SET_STRING_ELT(nam,i,mkChar(thetanames[i]));
     }
-    setAttrib(res,R_NamesSymbol,nam);
+    Rf_setAttrib(res,R_NamesSymbol,nam);
     UNPROTECT(2);
     return res;
   }
@@ -962,7 +962,7 @@ SEXP EvalADFunObjectTemplate(SEXP f, SEXP theta, SEXP control)
     if(dumpstack)CppAD::traceforward0sweep(0);
     SEXP rangenames=Rf_getAttrib(f,Rf_install("range.names"));
     if(LENGTH(res)==LENGTH(rangenames)){
-      setAttrib(res,R_NamesSymbol,rangenames);
+      Rf_setAttrib(res,R_NamesSymbol,rangenames);
     }
   }
   if(order==1){
@@ -1117,13 +1117,13 @@ extern "C"
       }
       /* Convert ADFun pointer to R_ExternalPtr */
       PROTECT(res=R_MakeExternalPtr((void*) pf,mkChar("ADFun"),R_NilValue));
-      setAttrib(res,Rf_install("range.names"),info);
+      Rf_setAttrib(res,Rf_install("range.names"),info);
       R_RegisterCFinalizer(res,finalizeADFun);
     }
 
     /* Return list of external pointer and default-parameter */
     SEXP ans;
-    setAttrib(res,Rf_install("par"),par);
+    Rf_setAttrib(res,Rf_install("par"),par);
     PROTECT(ans=ptrList(res));
     UNPROTECT(4);
 
@@ -1145,7 +1145,7 @@ extern "C"
     SET_STRING_ELT(names,2,mkChar("use_VecAD"));
     SET_VECTOR_ELT(ans,3,asSEXP(int(pf->size_var())));
     SET_STRING_ELT(names,3,mkChar("size_var"));
-    setAttrib(ans,R_NamesSymbol,names);
+    Rf_setAttrib(ans,R_NamesSymbol,names);
     UNPROTECT(2);
     return ans;
   }
@@ -1369,7 +1369,7 @@ extern "C"
 
     /* Return ptrList */
     SEXP ans;
-    setAttrib(res,Rf_install("par"),par);
+    Rf_setAttrib(res,Rf_install("par"),par);
     PROTECT(ans=ptrList(res));
     UNPROTECT(3);
     return ans;
@@ -1483,9 +1483,9 @@ SEXP asSEXP(const sphess_t<ADFunType> &H, const char* tag)
     SEXP par_symbol = Rf_install("par");
     SEXP i_symbol = Rf_install("i");
     SEXP j_symbol = Rf_install("j");
-    setAttrib(res, par_symbol, par);
-    setAttrib(res, i_symbol, asSEXP(H.i));
-    setAttrib(res, j_symbol, asSEXP(H.j));
+    Rf_setAttrib(res, par_symbol, par);
+    Rf_setAttrib(res, i_symbol, asSEXP(H.i));
+    Rf_setAttrib(res, j_symbol, asSEXP(H.j));
     PROTECT(ans=ptrList(res));
     UNPROTECT(2);
     return ans;

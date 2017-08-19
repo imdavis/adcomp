@@ -136,7 +136,7 @@ SEXP asSEXP(const tmbutils::array<Type> &a)
    PROTECT(dim = Rf_allocVector(INTSXP, a.dim.size()));
    for(int i=0; i<a.dim.size(); i++)
      INTEGER(dim)[i] = a.dim[i];
-   setAttrib(val, R_DimSymbol, dim);
+   Rf_setAttrib(val, R_DimSymbol, dim);
    UNPROTECT(2);
    return val;
 }
