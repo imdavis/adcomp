@@ -27,6 +27,11 @@ setHook(packageEvent("TMB", "onLoad"),
                 rcpp.env <- asNamespace("Rcpp")
                 unlockBinding("sourceCpp", rcpp.env)
                 rcpp.env$sourceCpp <- tmb.env$compile
+                ## Auto completion needs TMB on system includes
+                inc <- Sys.getenv("CPLUS_INCLUDE_PATH")
+                tmbinc <- system.file("include", package="TMB")
+                if (inc!="") tmbinc <- paste(inc, tmbinc, sep=":")
+                Sys.setenv(CPLUS_INCLUDE_PATH = tmbinc)
             }
         } )
 '
