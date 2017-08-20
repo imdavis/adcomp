@@ -161,7 +161,7 @@ Rboolean isNumericScalar(SEXP x);
 void RObjectTestExpectedType(SEXP x, RObjectTester expectedtype, const char *nam){
   if(expectedtype != NULL){
     if(!expectedtype(x)){
-      if(isNull(x)){
+      if(Rf_isNull(x)){
 	Rf_warning("Expected object. Got NULL.");
       }
       Rf_error("Error when reading the variable: '%s'. Please check data and parameters.",nam);
@@ -208,7 +208,7 @@ asVector<Type>(objective_function::getShape(#name,&isNumericScalar)),	\
     \ingroup macros */
 #define DATA_VECTOR(name)						\
 vector<Type> name;							\
-if (!isNull(getListElement(objective_function::parameters,#name))) {	\
+if (!Rf_isNull(getListElement(objective_function::parameters,#name))) {	\
   name = objective_function::fillShape(asVector<Type>(			\
          objective_function::getShape(#name,&isNumeric)),#name);	\
 } else {								\
@@ -315,7 +315,7 @@ if(isDouble<Type>::value && objective_function::do_simulate)
     \ingroup macros*/
 #define DATA_ARRAY(name)						\
 tmbutils::array<Type> name;						\
-if (!isNull(getListElement(objective_function::parameters,#name))) {	\
+if (!Rf_isNull(getListElement(objective_function::parameters,#name))) {	\
   name = objective_function::fillShape(tmbutils::asArray<Type>(		\
          objective_function::getShape(#name,&Rf_isArray)),#name);		\
 } else {								\
@@ -421,7 +421,7 @@ struct data_indicator : VT{
     \ingroup macros */
 #define DATA_ARRAY_INDICATOR(name, obs)					\
 data_indicator<tmbutils::array<Type>, Type > name(obs);			\
-if (!isNull(getListElement(objective_function::parameters,#name))) {	\
+if (!Rf_isNull(getListElement(objective_function::parameters,#name))) {	\
   name.fill( objective_function::fillShape(asVector<Type>(		\
              objective_function::getShape(#name,&isNumeric)),#name) );	\
 }
@@ -433,7 +433,7 @@ if (!isNull(getListElement(objective_function::parameters,#name))) {	\
     \ingroup macros */
 #define DATA_VECTOR_INDICATOR(name, obs)				\
 data_indicator<tmbutils::vector<Type>, Type > name(obs);		\
-if (!isNull(getListElement(objective_function::parameters,#name))) {	\
+if (!Rf_isNull(getListElement(objective_function::parameters,#name))) {	\
   name.fill( objective_function::fillShape(asVector<Type>(		\
              objective_function::getShape(#name,&isNumeric)),#name) );	\
 }
@@ -1175,7 +1175,7 @@ extern "C"
   SEXP EvalADFunObject(SEXP f, SEXP theta, SEXP control)
   {
     TMB_TRY {
-      if(isNull(f))Rf_error("Expected external pointer - got NULL");
+      if(Rf_isNull(f))Rf_error("Expected external pointer - got NULL");
       SEXP tag=R_ExternalPtrTag(f);
       if(!strcmp(CHAR(tag), "ADFun"))
 	return EvalADFunObjectTemplate<ADFun<double> >(f,theta,control);
