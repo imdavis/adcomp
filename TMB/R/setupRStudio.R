@@ -32,7 +32,7 @@ setHook(packageEvent("TMB", "onLoad"),
                   ## Overload system.file
                   system.file <- function(...){
                     ans <- base::system.file(...)
-                    chartr("\\", "/", shortPathName(ans))
+                    chartr("\\\\", "/", shortPathName(ans))
                   }
                 }
                 definc <- Sys.getenv("CPLUS_INCLUDE_PATH")
