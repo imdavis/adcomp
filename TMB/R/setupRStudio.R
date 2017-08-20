@@ -28,6 +28,13 @@ setHook(packageEvent("TMB", "onLoad"),
                 unlockBinding("sourceCpp", rcpp.env)
                 rcpp.env$sourceCpp <- tmb.env$compile
                 ## Auto completion needs TMB and Eigen on system includes
+                if (.Platform$OS.type=="windows") {
+                  ## Overload system.file
+                  system.file <- function(...){
+                    ans <- base::system.file(...)
+                    chartr("\\", "/", shortPathName(ans))
+                  }
+                }
                 definc <- Sys.getenv("CPLUS_INCLUDE_PATH")
                 tmbinc <- system.file("include", package="TMB")
                 eiginc <- system.file("include", package="RcppEigen")
