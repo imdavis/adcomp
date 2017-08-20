@@ -187,19 +187,19 @@ Rboolean isNumericScalar(SEXP x){
     \ingroup macros */
 #define PARAMETER_MATRIX(name)						\
 tmbutils::matrix<Type> name(objective_function::fillShape(		\
-asMatrix<Type>(objective_function::getShape(#name,&isMatrix)),#name));
+asMatrix<Type>(objective_function::getShape(#name,&Rf_isMatrix)),#name));
 
 /** \brief Get parameter vector from R and declare it as vector<Type> 
     \ingroup macros*/
 #define PARAMETER_VECTOR(name)						\
 vector<Type> name(objective_function::fillShape(			\
-asVector<Type>(objective_function::getShape(#name,&isNumeric)),#name));
+asVector<Type>(objective_function::getShape(#name,&Rf_isNumeric)),#name));
 
 /** \brief Get parameter scalar from R and declare it as Type
     \ingroup macros */
 #define PARAMETER(name)							\
 Type name(objective_function::fillShape(				\
-asVector<Type>(objective_function::getShape(#name,&isNumericScalar)),	\
+asVector<Type>(objective_function::getShape(#name,&Rf_isNumericScalar)),	\
 #name)[0]);
 
 /** \brief Get data vector from R and declare it as vector<Type>
@@ -210,28 +210,28 @@ asVector<Type>(objective_function::getShape(#name,&isNumericScalar)),	\
 vector<Type> name;							\
 if (!Rf_isNull(getListElement(objective_function::parameters,#name))) {	\
   name = objective_function::fillShape(asVector<Type>(			\
-         objective_function::getShape(#name,&isNumeric)),#name);	\
+         objective_function::getShape(#name,&Rf_isNumeric)),#name);	\
 } else {								\
   name = asVector<Type>(getListElement(					\
-         objective_function::data,#name,&isNumeric));			\
+         objective_function::data,#name,&Rf_isNumeric));			\
 }
 
 /** \brief Get data matrix from R and declare it as matrix<Type>
     \ingroup macros */
 #define DATA_MATRIX(name)					\
 matrix<Type> name(asMatrix<Type>(				\
-getListElement(objective_function::data,#name,&isMatrix)));
+getListElement(objective_function::data,#name,&Rf_isMatrix)));
 
 /** \brief Get data scalar from R and declare it as Type
     \ingroup macros */
 #define DATA_SCALAR(name)						\
 Type name(asVector<Type>(getListElement(objective_function::data,	\
-#name,&isNumericScalar))[0]);
+#name,&Rf_isNumericScalar))[0]);
 
 /** \brief Get data scalar from R and declare it as int
     \ingroup macros */
 #define DATA_INTEGER(name) int name(CppAD::Integer(asVector<Type>(	\
-getListElement(objective_function::data,#name,&isNumericScalar))[0]));
+getListElement(objective_function::data,#name,&Rf_isNumericScalar))[0]));
 
 /** \brief Get data vector of type "factor" from R and declare it as a
     zero-based integer vector.
@@ -251,13 +251,13 @@ getListElement(objective_function::data,#name,&isNumericScalar))[0]));
     \endverbatim
     \ingroup macros */
 #define DATA_FACTOR(name) vector<int> name(asVector<int>(	\
-getListElement(objective_function::data,#name,&isNumeric)));
+getListElement(objective_function::data,#name,&Rf_isNumeric)));
 
 /** \brief Get data vector of type "integer" from R and declare it
     vector<int>. (DATA_INTEGER() is for a scalar integer)
     \ingroup macros */
 #define DATA_IVECTOR(name) vector<int> name(asVector<int>(	\
-getListElement(objective_function::data,#name,&isNumeric)));
+getListElement(objective_function::data,#name,&Rf_isNumeric)));
 
 /** \brief Get the number of levels of a data factor from R
     \ingroup macros */
@@ -333,7 +333,7 @@ tmbutils::asArray<Type>(objective_function::getShape(		\
 /** \brief Get data matrix from R and declare it as matrix<int>
     \ingroup macros */
 #define DATA_IMATRIX(name) matrix<int> name(asMatrix<int>(	\
-getListElement(objective_function::data,#name,&isMatrix)));
+getListElement(objective_function::data,#name,&Rf_isMatrix)));
 
 /** \brief Get data array from R and declare it as array<int>
     \ingroup macros */
@@ -423,7 +423,7 @@ struct data_indicator : VT{
 data_indicator<tmbutils::array<Type>, Type > name(obs);			\
 if (!Rf_isNull(getListElement(objective_function::parameters,#name))) {	\
   name.fill( objective_function::fillShape(asVector<Type>(		\
-             objective_function::getShape(#name,&isNumeric)),#name) );	\
+             objective_function::getShape(#name,&Rf_isNumeric)),#name) );	\
 }
 
 /** \brief Declare an indicator vector 'name' of same shape as 'obs'.
@@ -435,7 +435,7 @@ if (!Rf_isNull(getListElement(objective_function::parameters,#name))) {	\
 data_indicator<tmbutils::vector<Type>, Type > name(obs);		\
 if (!Rf_isNull(getListElement(objective_function::parameters,#name))) {	\
   name.fill( objective_function::fillShape(asVector<Type>(		\
-             objective_function::getShape(#name,&isNumeric)),#name) );	\
+             objective_function::getShape(#name,&Rf_isNumeric)),#name) );	\
 }
 
 // kasper: Not sure used anywhere
