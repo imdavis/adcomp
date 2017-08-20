@@ -177,7 +177,7 @@ Rboolean isNumericScalar(SEXP x){
     Rf_warning("Expected scalar. Got length=%i",LENGTH(x));
     return FALSE;
   }
-  return isNumeric(x);
+  return Rf_isNumeric(x);
 }
 #endif
 
