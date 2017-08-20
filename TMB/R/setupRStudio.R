@@ -39,7 +39,7 @@ setHook(packageEvent("TMB", "onLoad"),
                 tmbinc <- system.file("include", package="TMB")
                 eiginc <- system.file("include", package="RcppEigen")
                 inc <- c(definc, tmbinc, eiginc)
-                inc <- paste(inc[inc != ""], collapse=":")
+                inc <- paste(inc[inc != ""], collapse=.Platform$path.sep)
                 Sys.setenv(CPLUS_INCLUDE_PATH = inc)
             }
         } )
