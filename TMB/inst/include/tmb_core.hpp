@@ -90,7 +90,7 @@ SEXP ptrList(SEXP x)
   PROTECT(ans=Rf_allocVector(VECSXP,1));
   PROTECT(names=Rf_allocVector(STRSXP,1));
   SET_VECTOR_ELT(ans,0,x);
-  SET_STRING_ELT(names,0,mkChar("ptr"));
+  SET_STRING_ELT(names,0,Rf_mkChar("ptr"));
   Rf_setAttrib(ans,R_NamesSymbol,names);
   memory_manager.RegisterCFinalizer(ans);
   UNPROTECT(2);
@@ -532,7 +532,7 @@ struct report_stack{
     int k=0;
     for(int i=0;i<names.size();i++){
       for(int j=0;j<namelength[i];j++){
-	SET_STRING_ELT(nam,k,mkChar(names[i]));
+	SET_STRING_ELT(nam,k,Rf_mkChar(names[i]));
 	k++;
       }
     }
@@ -675,7 +675,7 @@ public:
     for(int i=0;i<n;i++){
       //REAL(res)[i]=CppAD::Value(theta[i]);
       REAL(res)[i]=value(theta[i]);
-      SET_STRING_ELT(nam,i,mkChar(thetanames[i]));
+      SET_STRING_ELT(nam,i,Rf_mkChar(thetanames[i]));
     }
     Rf_setAttrib(res,R_NamesSymbol,nam);
     UNPROTECT(2);
@@ -689,7 +689,7 @@ public:
     SEXP nam;
     PROTECT(nam=Rf_allocVector(STRSXP,n));
     for(int i=0;i<n;i++){
-      SET_STRING_ELT(nam,i,mkChar(parnames[i]));
+      SET_STRING_ELT(nam,i,Rf_mkChar(parnames[i]));
     }
     UNPROTECT(1);
     return nam;
@@ -1101,7 +1101,7 @@ extern "C"
       }
       parallelADFun<double>* ppf=new parallelADFun<double>(pfvec);
       /* Convert parallel ADFun pointer to R_ExternalPtr */
-      PROTECT(res=R_MakeExternalPtr((void*) ppf,mkChar("parallelADFun"),R_NilValue));
+      PROTECT(res=R_MakeExternalPtr((void*) ppf,Rf_mkChar("parallelADFun"),R_NilValue));
       R_RegisterCFinalizer(res,finalizeparallelADFun);
 #endif
     } else { // Serial mode
@@ -1116,7 +1116,7 @@ extern "C"
 	TMB_ERROR_BAD_ALLOC;
       }
       /* Convert ADFun pointer to R_ExternalPtr */
-      PROTECT(res=R_MakeExternalPtr((void*) pf,mkChar("ADFun"),R_NilValue));
+      PROTECT(res=R_MakeExternalPtr((void*) pf,Rf_mkChar("ADFun"),R_NilValue));
       Rf_setAttrib(res,Rf_install("range.names"),info);
       R_RegisterCFinalizer(res,finalizeADFun);
     }
@@ -1138,13 +1138,13 @@ extern "C"
     PROTECT(ans=Rf_allocVector(VECSXP,4));
     PROTECT(names=Rf_allocVector(STRSXP,4));
     SET_VECTOR_ELT(ans,0,asSEXP(int(pf->Domain())));
-    SET_STRING_ELT(names,0,mkChar("Domain"));
+    SET_STRING_ELT(names,0,Rf_mkChar("Domain"));
     SET_VECTOR_ELT(ans,1,asSEXP(int(pf->Range())));
-    SET_STRING_ELT(names,1,mkChar("Range"));
+    SET_STRING_ELT(names,1,Rf_mkChar("Range"));
     SET_VECTOR_ELT(ans,2,asSEXP(int(pf->use_VecAD())));
-    SET_STRING_ELT(names,2,mkChar("use_VecAD"));
+    SET_STRING_ELT(names,2,Rf_mkChar("use_VecAD"));
     SET_VECTOR_ELT(ans,3,asSEXP(int(pf->size_var())));
-    SET_STRING_ELT(names,3,mkChar("size_var"));
+    SET_STRING_ELT(names,3,Rf_mkChar("size_var"));
     Rf_setAttrib(ans,R_NamesSymbol,names);
     UNPROTECT(2);
     return ans;
@@ -1221,7 +1221,7 @@ extern "C"
 
     /* Convert DoubleFun pointer to R_ExternalPtr */
     SEXP res,ans;
-    PROTECT(res=R_MakeExternalPtr((void*) pF,mkChar("DoubleFun"),R_NilValue));
+    PROTECT(res=R_MakeExternalPtr((void*) pF,Rf_mkChar("DoubleFun"),R_NilValue));
     R_RegisterCFinalizer(res,finalizeDoubleFun);
     PROTECT(ans=ptrList(res));
     UNPROTECT(2);
@@ -1348,7 +1348,7 @@ extern "C"
       }
       parallelADFun<double>* ppf=new parallelADFun<double>(pfvec);
       /* Convert parallel ADFun pointer to R_ExternalPtr */
-      PROTECT(res=R_MakeExternalPtr((void*) ppf,mkChar("parallelADFun"),R_NilValue));
+      PROTECT(res=R_MakeExternalPtr((void*) ppf,Rf_mkChar("parallelADFun"),R_NilValue));
       R_RegisterCFinalizer(res,finalizeparallelADFun);
 #endif
     } else { // Serial mode
@@ -1363,7 +1363,7 @@ extern "C"
 	TMB_ERROR_BAD_ALLOC;
       }
       /* Convert ADFun pointer to R_ExternalPtr */
-      PROTECT(res=R_MakeExternalPtr((void*) pf,mkChar("ADFun"),R_NilValue));
+      PROTECT(res=R_MakeExternalPtr((void*) pf,Rf_mkChar("ADFun"),R_NilValue));
       R_RegisterCFinalizer(res,finalizeADFun);
     }
 
@@ -1475,7 +1475,7 @@ SEXP asSEXP(const sphess_t<ADFunType> &H, const char* tag)
     par=R_NilValue;
     /* Convert ADFun pointer to R_ExternalPtr */
     SEXP res;
-    PROTECT( res = R_MakeExternalPtr((void*) H.pf, mkChar(tag), R_NilValue) );
+    PROTECT( res = R_MakeExternalPtr((void*) H.pf, Rf_mkChar(tag), R_NilValue) );
     R_RegisterCFinalizer(res, finalize<ADFunType>);
     /* Return list */
     SEXP ans;
