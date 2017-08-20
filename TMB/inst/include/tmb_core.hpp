@@ -904,7 +904,7 @@ struct parallel_accumulator{
 template<class ADFunType>
 SEXP EvalADFunObjectTemplate(SEXP f, SEXP theta, SEXP control)
 {
-  if(!isNewList(control))Rf_error("'control' must be a list");
+  if(!Rf_isNewList(control))Rf_error("'control' must be a list");
   ADFunType* pf;
   pf=(ADFunType*)R_ExternalPtrAddr(f);
   PROTECT(theta=coerceVector(theta,REALSXP));
@@ -1058,10 +1058,10 @@ extern "C"
   {
     ADFun<double>* pf = NULL;
     /* Some type checking */
-    if(!isNewList(data))Rf_error("'data' must be a list");
-    if(!isNewList(parameters))Rf_error("'parameters' must be a list");
+    if(!Rf_isNewList(data))Rf_error("'data' must be a list");
+    if(!Rf_isNewList(parameters))Rf_error("'parameters' must be a list");
     if(!isEnvironment(report))Rf_error("'report' must be an environment");
-    if(!isNewList(control))Rf_error("'control' must be a list");
+    if(!Rf_isNewList(control))Rf_error("'control' must be a list");
     int returnReport = INTEGER(getListElement(control,"report"))[0];
 
     /* Get the default parameter vector (tiny overhead) */
@@ -1205,8 +1205,8 @@ extern "C"
   SEXP MakeDoubleFunObject(SEXP data, SEXP parameters, SEXP report)
   {
     /* Some type checking */
-    if(!isNewList(data))Rf_error("'data' must be a list");
-    if(!isNewList(parameters))Rf_error("'parameters' must be a list");
+    if(!Rf_isNewList(data))Rf_error("'data' must be a list");
+    if(!Rf_isNewList(parameters))Rf_error("'parameters' must be a list");
     if(!isEnvironment(report))Rf_error("'report' must be an environment");
     
     /* Create DoubleFun pointer */
@@ -1269,8 +1269,8 @@ extern "C"
   {
     TMB_TRY {
       /* Some type checking */
-      if(!isNewList(data))Rf_error("'data' must be a list");
-      if(!isNewList(parameters))Rf_error("'parameters' must be a list");
+      if(!Rf_isNewList(data))Rf_error("'data' must be a list");
+      if(!Rf_isNewList(parameters))Rf_error("'parameters' must be a list");
       if(!isEnvironment(report))Rf_error("'report' must be an environment");
       objective_function<double> F(data,parameters,report);
       F(); // Run through user template
@@ -1312,8 +1312,8 @@ extern "C"
   {
     ADFun<double>* pf = NULL;
     /* Some type checking */
-    if(!isNewList(data))Rf_error("'data' must be a list");
-    if(!isNewList(parameters))Rf_error("'parameters' must be a list");
+    if(!Rf_isNewList(data))Rf_error("'data' must be a list");
+    if(!Rf_isNewList(parameters))Rf_error("'parameters' must be a list");
     if(!isEnvironment(report))Rf_error("'report' must be an environment");
 
     /* Get the default parameter vector (tiny overhead) */
@@ -1386,8 +1386,8 @@ extern "C"
 sphess MakeADHessObject2_(SEXP data, SEXP parameters, SEXP report, SEXP skip, int parallel_region=-1)
 {
   /* Some type checking */
-  if(!isNewList(data))Rf_error("'data' must be a list");
-  if(!isNewList(parameters))Rf_error("'parameters' must be a list");
+  if(!Rf_isNewList(data))Rf_error("'data' must be a list");
+  if(!Rf_isNewList(parameters))Rf_error("'parameters' must be a list");
   if(!isEnvironment(report))Rf_error("'report' must be an environment");
   
   /* Prepare stuff */
