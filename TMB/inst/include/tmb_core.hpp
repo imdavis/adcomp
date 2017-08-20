@@ -169,8 +169,8 @@ void RObjectTestExpectedType(SEXP x, RObjectTester expectedtype, const char *nam
   }
 }
 Rboolean isValidSparseMatrix(SEXP x){
-  if(!inherits(x,"dgTMatrix"))Rf_warning("Expected sparse matrix of class 'dgTMatrix'.");
-  return inherits(x,"dgTMatrix");
+  if(!Rf_inherits(x,"dgTMatrix"))Rf_warning("Expected sparse matrix of class 'dgTMatrix'.");
+  return Rf_inherits(x,"dgTMatrix");
 }
 Rboolean isNumericScalar(SEXP x){
   if(LENGTH(x)!=1){
