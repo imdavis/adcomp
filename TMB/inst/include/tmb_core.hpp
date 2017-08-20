@@ -907,7 +907,7 @@ SEXP EvalADFunObjectTemplate(SEXP f, SEXP theta, SEXP control)
   if(!Rf_isNewList(control))Rf_error("'control' must be a list");
   ADFunType* pf;
   pf=(ADFunType*)R_ExternalPtrAddr(f);
-  PROTECT(theta=coerceVector(theta,REALSXP));
+  PROTECT(theta=Rf_coerceVector(theta,REALSXP));
   int n=pf->Domain();
   int m=pf->Range();
   if(LENGTH(theta)!=n)Rf_error("Wrong parameter length.");
@@ -1235,7 +1235,7 @@ extern "C"
       int do_simulate = INTEGER(getListElement(control, "do_simulate"))[0];
       objective_function<double>* pf;
       pf = (objective_function<double>*) R_ExternalPtrAddr(f);
-      PROTECT( theta=coerceVector(theta,REALSXP) );
+      PROTECT( theta=Rf_coerceVector(theta,REALSXP) );
       int n = pf->theta.size();
       if (LENGTH(theta)!=n) Rf_error("Wrong parameter length.");
       vector<double> x(n);
