@@ -467,7 +467,7 @@ SEXP getListElement(SEXP list, const char *str, RObjectTester expectedtype=NULL)
   if(config.debug.getListElement)std::cout << "getListElement: " << str << " ";
   SEXP elmt = R_NilValue, names = Rf_getAttrib(list, R_NamesSymbol);
   int i; 
-  for (i = 0; i < length(list); i++) 
+  for (i = 0; i < Rf_length(list); i++)
     if(strcmp(CHAR(STRING_ELT(names, i)), str) == 0) 
       {
 	elmt = VECTOR_ELT(list, i); 
@@ -641,8 +641,8 @@ public:
     index=0;
     int counter=0;
     SEXP obj=parameters_;
-    for(int i=0;i<length(obj);i++){
-      for(int j=0;j<length(VECTOR_ELT(obj,i));j++)
+    for(int i=0;i<Rf_length(obj);i++){
+      for(int j=0;j<Rf_length(VECTOR_ELT(obj,i));j++)
 	{
 	  theta[counter++]=Type(REAL(VECTOR_ELT(obj,i))[j]);
 	}
@@ -716,9 +716,9 @@ public:
   int nparms(SEXP obj)
   {
     int count=0;
-    for(int i=0;i<length(obj);i++){
+    for(int i=0;i<Rf_length(obj);i++){
       if(!Rf_isReal(VECTOR_ELT(obj,i)))Rf_error("PARAMETER COMPONENT NOT A VECTOR!");
-      count+=length(VECTOR_ELT(obj,i));
+      count+=Rf_length(VECTOR_ELT(obj,i));
     }
     return count;
   }
@@ -924,10 +924,10 @@ SEXP EvalADFunObjectTemplate(SEXP f, SEXP theta, SEXP control)
   int dumpstack=INTEGER(getListElement(control,"dumpstack"))[0];
   SEXP hessiancols; // Hessian columns
   PROTECT(hessiancols=getListElement(control,"hessiancols"));
-  int ncols=length(hessiancols);
+  int ncols=Rf_length(hessiancols);
   SEXP hessianrows; // Hessian rows
   PROTECT(hessianrows=getListElement(control,"hessianrows"));
-  int nrows=length(hessianrows);
+  int nrows=Rf_length(hessianrows);
   if((nrows>0)&(nrows!=ncols))Rf_error("hessianrows and hessianrows must have same length");
   vector<size_t> cols(ncols);
   vector<size_t> cols0(ncols);
