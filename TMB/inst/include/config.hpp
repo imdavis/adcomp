@@ -51,7 +51,7 @@ struct config_struct{
     // cmd=2: copy from R to this struct.
     SEXP name_symbol = Rf_install(name);
     if (cmd==0) var = default_value;
-    if (cmd==1) defineVar(name_symbol, asSEXP(var), envir);
+    if (cmd==1) Rf_defineVar(name_symbol, asSEXP(var), envir);
     if (cmd==2) var = INTEGER(findVar(name_symbol, envir))[0];
   })
 #define SET(name,value)set(#name,name,value);

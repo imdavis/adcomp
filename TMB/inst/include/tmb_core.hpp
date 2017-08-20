@@ -282,7 +282,7 @@ getListElement(objective_function::data,#name,&isValidSparseMatrix)));
     \ingroup macros */
 #define REPORT(name)                                            \
 if(isDouble<Type>::value && this->current_parallel_region<0) {  \
-  defineVar(Rf_install(#name),                                     \
+  Rf_defineVar(Rf_install(#name),                                     \
             asSEXP_protect(name),objective_function::report);   \
   UNPROTECT(1);                                                 \
 }
