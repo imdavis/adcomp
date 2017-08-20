@@ -33,7 +33,7 @@ setHook(packageEvent("TMB", "onLoad"),
                 eiginc <- system.file("include", package="RcppEigen")
                 inc <- c(definc, tmbinc, eiginc)
                 inc <- paste(inc[inc != ""], collapse=":")
-                Sys.setenv(CPLUS_INCLUDE_PATH = tmbinc)
+                Sys.setenv(CPLUS_INCLUDE_PATH = inc)
             }
         } )
 '
@@ -56,7 +56,7 @@ if(ans == "yes") {
         end <- which(tail(codelines, 1) == oldlines)
         end <- min(end[end>begin])
         oldlines <- oldlines[-(begin:end)]
-        message("Removing old changes from", file)
+        message("Removing old changes from ", file)
         writeLines(oldlines, file)
     }
     message("Adding changes to ", file)
