@@ -1060,7 +1060,7 @@ extern "C"
     /* Some type checking */
     if(!Rf_isNewList(data))Rf_error("'data' must be a list");
     if(!Rf_isNewList(parameters))Rf_error("'parameters' must be a list");
-    if(!isEnvironment(report))Rf_error("'report' must be an environment");
+    if(!Rf_isEnvironment(report))Rf_error("'report' must be an environment");
     if(!Rf_isNewList(control))Rf_error("'control' must be a list");
     int returnReport = INTEGER(getListElement(control,"report"))[0];
 
@@ -1207,7 +1207,7 @@ extern "C"
     /* Some type checking */
     if(!Rf_isNewList(data))Rf_error("'data' must be a list");
     if(!Rf_isNewList(parameters))Rf_error("'parameters' must be a list");
-    if(!isEnvironment(report))Rf_error("'report' must be an environment");
+    if(!Rf_isEnvironment(report))Rf_error("'report' must be an environment");
     
     /* Create DoubleFun pointer */
     objective_function<double>* pF = NULL;
@@ -1271,7 +1271,7 @@ extern "C"
       /* Some type checking */
       if(!Rf_isNewList(data))Rf_error("'data' must be a list");
       if(!Rf_isNewList(parameters))Rf_error("'parameters' must be a list");
-      if(!isEnvironment(report))Rf_error("'report' must be an environment");
+      if(!Rf_isEnvironment(report))Rf_error("'report' must be an environment");
       objective_function<double> F(data,parameters,report);
       F(); // Run through user template
       return F.parNames();
@@ -1314,7 +1314,7 @@ extern "C"
     /* Some type checking */
     if(!Rf_isNewList(data))Rf_error("'data' must be a list");
     if(!Rf_isNewList(parameters))Rf_error("'parameters' must be a list");
-    if(!isEnvironment(report))Rf_error("'report' must be an environment");
+    if(!Rf_isEnvironment(report))Rf_error("'report' must be an environment");
 
     /* Get the default parameter vector (tiny overhead) */
     SEXP par,res=NULL;
@@ -1388,7 +1388,7 @@ sphess MakeADHessObject2_(SEXP data, SEXP parameters, SEXP report, SEXP skip, in
   /* Some type checking */
   if(!Rf_isNewList(data))Rf_error("'data' must be a list");
   if(!Rf_isNewList(parameters))Rf_error("'parameters' must be a list");
-  if(!isEnvironment(report))Rf_error("'report' must be an environment");
+  if(!Rf_isEnvironment(report))Rf_error("'report' must be an environment");
   
   /* Prepare stuff */
   objective_function< AD<AD<AD<double> > > > F(data,parameters,report);
