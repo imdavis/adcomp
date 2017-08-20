@@ -199,7 +199,7 @@ asVector<Type>(objective_function::getShape(#name,&Rf_isNumeric)),#name));
     \ingroup macros */
 #define PARAMETER(name)							\
 Type name(objective_function::fillShape(				\
-asVector<Type>(objective_function::getShape(#name,&Rf_isNumericScalar)),	\
+asVector<Type>(objective_function::getShape(#name,&isNumericScalar)),	\
 #name)[0]);
 
 /** \brief Get data vector from R and declare it as vector<Type>
@@ -226,12 +226,12 @@ getListElement(objective_function::data,#name,&Rf_isMatrix)));
     \ingroup macros */
 #define DATA_SCALAR(name)						\
 Type name(asVector<Type>(getListElement(objective_function::data,	\
-#name,&Rf_isNumericScalar))[0]);
+#name,&isNumericScalar))[0]);
 
 /** \brief Get data scalar from R and declare it as int
     \ingroup macros */
 #define DATA_INTEGER(name) int name(CppAD::Integer(asVector<Type>(	\
-getListElement(objective_function::data,#name,&Rf_isNumericScalar))[0]));
+getListElement(objective_function::data,#name,&isNumericScalar))[0]));
 
 /** \brief Get data vector of type "factor" from R and declare it as a
     zero-based integer vector.
