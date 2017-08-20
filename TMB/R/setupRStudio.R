@@ -27,10 +27,12 @@ setHook(packageEvent("TMB", "onLoad"),
                 rcpp.env <- asNamespace("Rcpp")
                 unlockBinding("sourceCpp", rcpp.env)
                 rcpp.env$sourceCpp <- tmb.env$compile
-                ## Auto completion needs TMB on system includes
-                inc <- Sys.getenv("CPLUS_INCLUDE_PATH")
+                ## Auto completion needs TMB and Eigen on system includes
+                definc <- Sys.getenv("CPLUS_INCLUDE_PATH")
                 tmbinc <- system.file("include", package="TMB")
-                if (inc!="") tmbinc <- paste(inc, tmbinc, sep=":")
+                eiginc <- system.file("include", package="RcppEigen")
+                inc <- c(definc, tmbinc, eiginc)
+                inc <- paste(inc[inc != ""], collapse=":")
                 Sys.setenv(CPLUS_INCLUDE_PATH = tmbinc)
             }
         } )
@@ -43,18 +45,25 @@ mess <- c("You are about to setup Rstudio with TMB.",
 invisible(lapply(mess, cat, "\n"))
 ans <- readline("OK? (yes/no) ")
 if(ans == "yes") {
-    chk <- grepl(
-        "######## TMB - setup RStudio",
-        readLines(file)
-    )
-    if(any(chk))
-        message("Skipping because changes seem to have been made already.")
-    else {
-        cat(code, file=file, append=TRUE)
-        message("Please re-start RStudio for the changes to take place.")
+    ## Create ~/.Rprofile if not exists
+    if (!file.exists(file)) file.create(file)
+    ## Read ~/.Rprofile and remove change if previously made
+    oldlines <- readLines(file)
+    codelines <- strsplit(code,"\n")[[1]][-1]
+    begin <- which(head(codelines, 1) == oldlines)[1]
+    if (!is.na(begin)) {
+        if (begin > 1) begin <- begin - 1
+        end <- which(tail(codelines, 1) == oldlines)
+        end <- min(end[end>begin])
+        oldlines <- oldlines[-(begin:end)]
+        message("Removing old changes from", file)
+        writeLines(oldlines, file)
     }
+    message("Adding changes to ", file)
+    cat(code, file=file, append=TRUE)
+    message("Please re-start RStudio for the changes to take place.")
 } else {
-    message("Dropping out")
+    message("Must be 'yes' or 'no' - Dropping out")
 }
 
 ## Experimental RStudio TMB snippet integration
