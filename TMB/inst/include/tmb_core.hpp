@@ -206,7 +206,7 @@ Rboolean isNumericScalar(SEXP x){
     \endcode
 
     \ingroup macros */
-#define TMB_OBJECTIVE_PTR                       \
+#define TMB_OBJECTIVE_PTR                                               \
 this
 
 /** \brief Get parameter matrix from R and declare it as matrix<Type>
@@ -218,30 +218,30 @@ asMatrix<Type> ( TMB_OBJECTIVE_PTR -> getShape( #name, &Rf_isMatrix) ), \
 
 /** \brief Get parameter vector from R and declare it as vector<Type> 
     \ingroup macros*/
-#define PARAMETER_VECTOR(name)						\
-vector<Type> name(TMB_OBJECTIVE_PTR -> fillShape(			\
+#define PARAMETER_VECTOR(name)                                          \
+vector<Type> name(TMB_OBJECTIVE_PTR -> fillShape(                       \
 asVector<Type>(TMB_OBJECTIVE_PTR -> getShape(#name, &Rf_isNumeric)),    \
 #name));
 
 /** \brief Get parameter scalar from R and declare it as Type
     \ingroup macros */
-#define PARAMETER(name)							\
-Type name(TMB_OBJECTIVE_PTR -> fillShape(				\
-asVector<Type>(TMB_OBJECTIVE_PTR -> getShape(#name,&isNumericScalar)),	\
+#define PARAMETER(name)                                                 \
+Type name(TMB_OBJECTIVE_PTR -> fillShape(                               \
+asVector<Type>(TMB_OBJECTIVE_PTR -> getShape(#name,&isNumericScalar)),  \
 #name)[0]);
 
 /** \brief Get data vector from R and declare it as vector<Type>
     \note If name is found in the parameter list it will be read as a
     parameter vector.
     \ingroup macros */
-#define DATA_VECTOR(name)						\
-vector<Type> name;							\
+#define DATA_VECTOR(name)                                               \
+vector<Type> name;                                                      \
 if (!Rf_isNull(getListElement(TMB_OBJECTIVE_PTR -> parameters,#name))){ \
-  name = TMB_OBJECTIVE_PTR -> fillShape(asVector<Type>(			\
-         TMB_OBJECTIVE_PTR -> getShape(#name,&Rf_isNumeric)),#name);	\
-} else {								\
-  name = asVector<Type>(getListElement(					\
-         TMB_OBJECTIVE_PTR -> data,#name,&Rf_isNumeric));		\
+  name = TMB_OBJECTIVE_PTR -> fillShape(asVector<Type>(                 \
+         TMB_OBJECTIVE_PTR -> getShape(#name, &Rf_isNumeric)), #name);  \
+} else {                                                                \
+  name = asVector<Type>(getListElement(                                 \
+         TMB_OBJECTIVE_PTR -> data,#name,&Rf_isNumeric));               \
 }
 
 /** \brief Get data matrix from R and declare it as matrix<Type>
@@ -252,13 +252,13 @@ getListElement(TMB_OBJECTIVE_PTR -> data, #name, &Rf_isMatrix)));
 
 /** \brief Get data scalar from R and declare it as Type
     \ingroup macros */
-#define DATA_SCALAR(name)						\
-Type name(asVector<Type>(getListElement(TMB_OBJECTIVE_PTR -> data,	\
+#define DATA_SCALAR(name)                                               \
+Type name(asVector<Type>(getListElement(TMB_OBJECTIVE_PTR -> data,      \
 #name,&isNumericScalar))[0]);
 
 /** \brief Get data scalar from R and declare it as int
     \ingroup macros */
-#define DATA_INTEGER(name) int name(CppAD::Integer(asVector<Type>(	\
+#define DATA_INTEGER(name) int name(CppAD::Integer(asVector<Type>(      \
 getListElement(TMB_OBJECTIVE_PTR -> data,                               \
 #name, &isNumericScalar))[0]));
 
@@ -290,16 +290,16 @@ getListElement(TMB_OBJECTIVE_PTR -> data, #name, &Rf_isNumeric)));
 
 /** \brief Get the number of levels of a data factor from R
     \ingroup macros */
-#define NLEVELS(name) LENGTH(Rf_getAttrib(              \
-getListElement(TMB_OBJECTIVE_PTR -> data, #name),       \
+#define NLEVELS(name)                                                   \
+LENGTH(Rf_getAttrib(getListElement(TMB_OBJECTIVE_PTR -> data, #name),   \
 Rf_install("levels")))
 
 /** \brief Get sparse matrix from R and declare it as
     Eigen::SparseMatrix<Type>
     \ingroup macros */
-#define DATA_SPARSE_MATRIX(name)                                \
-Eigen::SparseMatrix<Type> name(tmbutils::asSparseMatrix<Type>(  \
-getListElement(TMB_OBJECTIVE_PTR -> data,                       \
+#define DATA_SPARSE_MATRIX(name)                                        \
+Eigen::SparseMatrix<Type> name(tmbutils::asSparseMatrix<Type>(          \
+getListElement(TMB_OBJECTIVE_PTR -> data,                               \
 #name, &isValidSparseMatrix)));
 
 // NOTE: REPORT() constructs new SEXP so never report in parallel!
@@ -311,12 +311,13 @@ getListElement(TMB_OBJECTIVE_PTR -> data,                       \
     \note REPORT() does nothing in parallel mode (construction of
     R-objects is not allowed in parallel).
     \ingroup macros */
-#define REPORT(name)                                            \
-if( isDouble<Type>::value &&                                    \
-    TMB_OBJECTIVE_PTR -> current_parallel_region<0 ) {          \
-            Rf_defineVar(Rf_install(#name),                     \
-            asSEXP_protect(name), TMB_OBJECTIVE_PTR -> report); \
-            UNPROTECT(1);                                       \
+#define REPORT(name)                                                    \
+if( isDouble<Type>::value &&                                            \
+    TMB_OBJECTIVE_PTR -> current_parallel_region<0 )                    \
+{                                                                       \
+    Rf_defineVar(Rf_install(#name),                                     \
+                 asSEXP_protect(name), TMB_OBJECTIVE_PTR -> report);    \
+    UNPROTECT(1);                                                       \
 }
 
 /** \brief Mark code that is only executed during simulation.
@@ -324,7 +325,7 @@ if( isDouble<Type>::value &&                                    \
     \note SIMULATE() does nothing in parallel mode.
     \ingroup macros
 */
-#define SIMULATE							\
+#define SIMULATE                                                        \
 if(isDouble<Type>::value && TMB_OBJECTIVE_PTR -> do_simulate)
 
 /** \brief Report an expression (scalar, vector, matrix or array valued) back to R with derivative
@@ -337,10 +338,10 @@ if(isDouble<Type>::value && TMB_OBJECTIVE_PTR -> do_simulate)
     \warning \c ADREPORT(name) must not be used before \c name has
     been assigned a value.
     \ingroup macros */
-#define ADREPORT(name)                                  \
+#define ADREPORT(name)                                                  \
 TMB_OBJECTIVE_PTR -> reportvector.push(name, #name);
 
-#define PARALLEL_REGION                         \
+#define PARALLEL_REGION                                                 \
 if( TMB_OBJECTIVE_PTR -> parallel_region() )
 
 /** \brief Get data array from R and declare it as array<Type>
@@ -349,7 +350,7 @@ if( TMB_OBJECTIVE_PTR -> parallel_region() )
     \ingroup macros*/
 #define DATA_ARRAY(name)                                                \
 tmbutils::array<Type> name;                                             \
-if (!Rf_isNull(getListElement(TMB_OBJECTIVE_PTR -> parameters,#name))) { \
+if (!Rf_isNull(getListElement(TMB_OBJECTIVE_PTR -> parameters,#name))){ \
   name = TMB_OBJECTIVE_PTR -> fillShape(tmbutils::asArray<Type>(        \
          TMB_OBJECTIVE_PTR -> getShape(#name, &Rf_isArray)), #name);    \
 } else {                                                                \
@@ -359,9 +360,9 @@ if (!Rf_isNull(getListElement(TMB_OBJECTIVE_PTR -> parameters,#name))) { \
 
 /** \brief Get parameter array from R and declare it as array<Type>
     \ingroup macros */
-#define PARAMETER_ARRAY(name)                                   \
-tmbutils::array<Type> name(TMB_OBJECTIVE_PTR -> fillShape(      \
-tmbutils::asArray<Type>(TMB_OBJECTIVE_PTR -> getShape(          \
+#define PARAMETER_ARRAY(name)                                           \
+tmbutils::array<Type> name(TMB_OBJECTIVE_PTR -> fillShape(              \
+tmbutils::asArray<Type>(TMB_OBJECTIVE_PTR -> getShape(                  \
 #name, &Rf_isArray)), #name));
 
 /** \brief Get data matrix from R and declare it as matrix<int>
@@ -457,9 +458,10 @@ struct data_indicator : VT{
     \ingroup macros */
 #define DATA_ARRAY_INDICATOR(name, obs)					\
 data_indicator<tmbutils::array<Type>, Type > name(obs);			\
-if (!Rf_isNull(getListElement(TMB_OBJECTIVE_PTR -> parameters,#name))) { \
+if (!Rf_isNull(getListElement(TMB_OBJECTIVE_PTR -> parameters,#name))){ \
   name.fill( TMB_OBJECTIVE_PTR -> fillShape(asVector<Type>(		\
-             TMB_OBJECTIVE_PTR -> getShape(#name,&Rf_isNumeric)),#name) ); \
+             TMB_OBJECTIVE_PTR -> getShape(#name, &Rf_isNumeric)),      \
+                                           #name) );                    \
 }
 
 /** \brief Declare an indicator vector 'name' of same shape as 'obs'.
@@ -467,11 +469,12 @@ if (!Rf_isNull(getListElement(TMB_OBJECTIVE_PTR -> parameters,#name))) { \
     This is used in conjunction with one-step-ahead residuals - see
     ?oneStepPredict
     \ingroup macros */
-#define DATA_VECTOR_INDICATOR(name, obs)				\
-data_indicator<tmbutils::vector<Type>, Type > name(obs);		\
-if (!Rf_isNull(getListElement(TMB_OBJECTIVE_PTR ->parameters,#name))) {	\
-  name.fill( TMB_OBJECTIVE_PTR -> fillShape(asVector<Type>(		\
-             TMB_OBJECTIVE_PTR -> getShape(#name,&Rf_isNumeric)),#name) ); \
+#define DATA_VECTOR_INDICATOR(name, obs)                                \
+data_indicator<tmbutils::vector<Type>, Type > name(obs);                \
+if (!Rf_isNull(getListElement(TMB_OBJECTIVE_PTR -> parameters,#name))){ \
+  name.fill( TMB_OBJECTIVE_PTR -> fillShape(asVector<Type>(             \
+             TMB_OBJECTIVE_PTR -> getShape(#name, &Rf_isNumeric)),      \
+                                           #name) );                    \
 }
 
 // kasper: Not sure used anywhere
