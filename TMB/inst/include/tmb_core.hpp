@@ -287,7 +287,7 @@ getListElement(TMB_OBJECTIVE_PTR ->data,#name,&Rf_isNumeric)));
 /** \brief Get the number of levels of a data factor from R
     \ingroup macros */
 #define NLEVELS(name) LENGTH(Rf_getAttrib(			\
-getListElement(this->data,#name),Rf_install("levels")))
+getListElement(TMB_OBJECTIVE_PTR->data,#name),Rf_install("levels")))
 
 /** \brief Get sparse matrix from R and declare it as
     Eigen::SparseMatrix<Type>
@@ -306,7 +306,7 @@ getListElement(TMB_OBJECTIVE_PTR ->data,#name,&isValidSparseMatrix)));
     R-objects is not allowed in parallel).
     \ingroup macros */
 #define REPORT(name)                                            \
-if(isDouble<Type>::value && this->current_parallel_region<0) {  \
+if(isDouble<Type>::value && TMB_OBJECTIVE_PTR->current_parallel_region<0) {  \
   Rf_defineVar(Rf_install(#name),                               \
             asSEXP_protect(name),TMB_OBJECTIVE_PTR ->report);   \
   UNPROTECT(1);                                                 \
@@ -332,7 +332,7 @@ if(isDouble<Type>::value && TMB_OBJECTIVE_PTR ->do_simulate)
     \ingroup macros */
 #define ADREPORT(name) TMB_OBJECTIVE_PTR ->reportvector.push(name,#name);
 
-#define PARALLEL_REGION if(this->parallel_region())
+#define PARALLEL_REGION if(TMB_OBJECTIVE_PTR->parallel_region())
 
 /** \brief Get data array from R and declare it as array<Type>
     \note If name is found in the parameter list it will be read as a
@@ -418,7 +418,7 @@ Type objective_function<Type>::operator() ()
 \ingroup macros
 */ 
 #define DATA_STRUCT(name, struct)			\
-struct<Type> name(getListElement(this->data,#name));
+struct<Type> name(getListElement(TMB_OBJECTIVE_PTR->data,#name));
 
 /** \brief Utilities for OSA residuals */
 template<class VT, class Type>
