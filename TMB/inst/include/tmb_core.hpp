@@ -456,10 +456,10 @@ struct data_indicator : VT{
     This is used in conjunction with one-step-ahead residuals - see
     ?oneStepPredict
     \ingroup macros */
-#define DATA_ARRAY_INDICATOR(name, obs)					\
-data_indicator<tmbutils::array<Type>, Type > name(obs);			\
+#define DATA_ARRAY_INDICATOR(name, obs)                                 \
+data_indicator<tmbutils::array<Type>, Type > name(obs);                 \
 if (!Rf_isNull(getListElement(TMB_OBJECTIVE_PTR -> parameters,#name))){ \
-  name.fill( TMB_OBJECTIVE_PTR -> fillShape(asVector<Type>(		\
+  name.fill( TMB_OBJECTIVE_PTR -> fillShape(asVector<Type>(             \
              TMB_OBJECTIVE_PTR -> getShape(#name, &Rf_isNumeric)),      \
                                            #name) );                    \
 }
